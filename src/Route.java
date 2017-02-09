@@ -9,4 +9,14 @@ public class Route {
 	}
 
 	Destination d;
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Route [timeSlot=" + timeSlot + ", d=" + d + "]";
+	}
+	
+	
 }

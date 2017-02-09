@@ -11,6 +11,11 @@ public class Goal {
 		this.intervalEnd = intervalEnd;
 		this.d = d;
 	}
+	
+	@Override
+	public String toString() {
+		return("Goal from "+ intervalStart+ " to "+ intervalEnd+ " goes to "+ d);
+	}
 
 	
 

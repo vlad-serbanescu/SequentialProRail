@@ -1,6 +1,16 @@
 
 public class Container {
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Container [d=" + d + ", paidPrice=" + paidPrice + "]";
+	}
+
 	Destination d;
 	float arrivalTimeInRtm, risk, latestArrivalTimeatD, maxBudget, paidPrice;
 
@@ -14,7 +24,7 @@ public class Container {
 	}
 
 	public float getDeadline() {
-		
-		return latestArrivalTimeatD- d.drivingTime;
+
+		return latestArrivalTimeatD - d.drivingTime;
 	}
 }

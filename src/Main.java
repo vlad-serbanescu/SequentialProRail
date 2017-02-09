@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class Main {
 
-	static int TRAINS = 2, CONTAINERS= 100;
+	static int TRAINS = 5, CONTAINERS= 1000;
 	
 	public static void main(String[] args) {
 		Destination duisburg = new Destination("Duisburg", 4.0f, 4000.0f),
@@ -31,6 +31,12 @@ public class Main {
 			Container cont = new Container(d, arrival, risk, latest, budget);
 			containers.add(cont);
 			
-		}		
+		}	
+		System.out.println("Initialized trains and containers");
+		AuctionOraganizerAgent pr = new AuctionOraganizerAgent(trains, containers);
+		pr.start(1);
+		
 	}
+	
+	
 }

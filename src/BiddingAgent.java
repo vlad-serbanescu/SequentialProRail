@@ -1,7 +1,5 @@
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 public class BiddingAgent {
 
@@ -13,7 +11,7 @@ public class BiddingAgent {
 		this.belief = init_value;
 		this.risk = risk;
 		this.init_goal = init_goal;
-		goals = new LinkedList();
+		goals = new LinkedList<>();
 		goals.add(init_goal);
 	}
 
@@ -22,6 +20,8 @@ public class BiddingAgent {
 	public void announce(Route slot, float price, AuctioneerAgent auctioneerAgent) {
 		System.out.println("Received Announce");
 		float budget = belief;
+		System.out.println(goals);
+		System.out.println(slot);
 		if (goals.size() > 0) {
 			Goal goal = goals.get(0);
 			float timeFit = strictFit(goal, slot);
@@ -29,6 +29,7 @@ public class BiddingAgent {
 			if (myOffer < 0)
 				goals.clear();
 			else {
+				System.out.println("Sending a bid");
 				auctioneerAgent.Bid(this, slot, myOffer);
 			}
 
@@ -38,17 +39,18 @@ public class BiddingAgent {
 
 	private float bidStrategy(float min, float budget, float timeFit, float risk) {
 
-		if(budget<min)
+		if (budget < min)
 			return 0;
-		if(timeFit<=0) return timeFit;
+		if (timeFit <= 0)
+			return timeFit;
 		return min + (budget - min) * timeFit * risk;
 	}
 
 	private float strictFit(Goal goal, Route slot) {
 		if (slot.timeSlot > goal.intervalEnd)
 			return -1;
-		else if ((slot.d != null) || ((goal.d != null) && (goal.intervalStart <= slot.timeSlot))
-				|| (slot.d.equals(goal.d))) {
+		else if (((slot.d != null) || (goal.d != null) || (goal.d == null && slot.d == null))
+				&& (goal.intervalStart <= slot.timeSlot)) {
 			return (slot.timeSlot - goal.intervalStart + 1) / (goal.intervalEnd - slot.timeSlot);
 		} else
 			return 0;

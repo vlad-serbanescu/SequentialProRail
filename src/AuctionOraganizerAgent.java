@@ -11,7 +11,7 @@ public class AuctionOraganizerAgent {
 	Train winnerTrain;
 	List<Container> winnerContainers;
 
-	public AuctionOraganizerAgent(LinkedList<Train> trains, LinkedList<Container> containers) {
+	public AuctionOraganizerAgent(List<Train> trains, List<Container> containers) {
 		idCounter = 0;
 		round = 0;
 		trainAgents = new LinkedList<>();
@@ -29,6 +29,8 @@ public class AuctionOraganizerAgent {
 					new Goal(container.arrivalTimeInRtm, container.getDeadline(), container.d), container.risk);
 			containerAgents.add(ba);
 		}
+		
+		System.out.println(trains.size()+ " "+ containers.size());
 
 	}
 
@@ -39,7 +41,7 @@ public class AuctionOraganizerAgent {
 		List<Route> goals = new LinkedList<>();
 		goals.add(freeRoute);
 		Map<Route, Float> beliefBase = new HashMap<>();
-		new AuctioneerAgent(beliefBase, goals, this.trainAgents, 1, this);
+		new AuctioneerAgent(beliefBase, goals, this.trainAgents, 1, this).run();
 
 	}
 
@@ -54,7 +56,7 @@ public class AuctionOraganizerAgent {
 			List<Route> goals = new LinkedList<>();
 			goals.add(timeSlotRoute);
 			Map<Route, Float> beliefBase = new HashMap<>();
-			new AuctioneerAgent(beliefBase, goals, containerAgents, winner.noContainers, this);
+			new AuctioneerAgent(beliefBase, goals, containerAgents, winner.noContainers, this).run();
 		}
 	}
 

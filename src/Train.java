@@ -11,4 +11,15 @@ public class Train {
 		this.intervalStart = intervalStart;
 		this.intervalEnd = intervalEnd;
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Train [noContainers=" + noContainers + ", intervalStart=" + intervalStart + ", intervalEnd="
+				+ intervalEnd + ", paidPrice=" + paidPrice + "]";
+	}
+	
+	
 }
