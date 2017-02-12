@@ -18,10 +18,10 @@ public class BiddingAgent {
 	Goal init_goal;
 
 	public void announce(Route slot, float price, AuctioneerAgent auctioneerAgent) {
-		System.out.println("Received Announce");
+		//System.out.println("Received Announce");
 		float budget = belief;
-		System.out.println(goals);
-		System.out.println(slot);
+		//System.out.println(goals);
+		//System.out.println(slot);
 		if (goals.size() > 0) {
 			Goal goal = goals.get(0);
 			float timeFit = strictFit(goal, slot);
@@ -29,7 +29,7 @@ public class BiddingAgent {
 			if (myOffer < 0)
 				goals.clear();
 			else {
-				System.out.println("Sending a bid");
+				//System.out.println("Sending a bid");
 				auctioneerAgent.Bid(this, slot, myOffer);
 			}
 

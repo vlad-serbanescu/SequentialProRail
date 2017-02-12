@@ -10,8 +10,12 @@ public class AuctionOraganizerAgent {
 	float timeSlot;
 	Train winnerTrain;
 	List<Container> winnerContainers;
+	List<Train> trains;
+	List<Container> allContainers;
 
 	public AuctionOraganizerAgent(List<Train> trains, List<Container> containers) {
+		this.trains = trains;
+		allContainers = containers;
 		idCounter = 0;
 		round = 0;
 		trainAgents = new LinkedList<>();
@@ -29,8 +33,8 @@ public class AuctionOraganizerAgent {
 					new Goal(container.arrivalTimeInRtm, container.getDeadline(), container.d), container.risk);
 			containerAgents.add(ba);
 		}
-		
-		System.out.println(trains.size()+ " "+ containers.size());
+
+		System.out.println(trains.size() + " " + containers.size());
 
 	}
 
@@ -41,11 +45,12 @@ public class AuctionOraganizerAgent {
 		List<Route> goals = new LinkedList<>();
 		goals.add(freeRoute);
 		Map<Route, Float> beliefBase = new HashMap<>();
+		beliefBase.put(freeRoute, 100.0f);
 		new AuctioneerAgent(beliefBase, goals, this.trainAgents, 1, this).run();
 
 	}
 
-	public void round1(List<BiddingAgent> winners, List<Float> prices, List<Train> unhappy, Train winner) {
+	public void round1(List<BiddingAgent> winners, List<Float> prices, List<BiddingAgent> unhappy) {
 		if (winners.size() == 0) {
 			System.out.println("No intersted trains");
 
@@ -56,31 +61,29 @@ public class AuctionOraganizerAgent {
 			List<Route> goals = new LinkedList<>();
 			goals.add(timeSlotRoute);
 			Map<Route, Float> beliefBase = new HashMap<>();
-			new AuctioneerAgent(beliefBase, goals, containerAgents, winner.noContainers, this).run();
+			new AuctioneerAgent(beliefBase, goals, containerAgents,
+					trains.get(trainAgents.indexOf(winners.get(0))).noContainers, this).run();
 		}
 	}
 
-	public void round2(List<Float> prices, List<Container> unhappyC, List<Container> winnerC) {
+	public void round2(List<Float> prices, List<BiddingAgent> unhappyC, List<BiddingAgent> winnerC) {
 		round = 0;
 		Destination wd = null;
-		winnerContainers = winnerC;
-		for (Container container : winnerContainers) {
-			container.paidPrice = prices.get(winnerContainers.indexOf(container));
+		for (BiddingAgent container : winnerC) {
+			Container c = allContainers.get(containerAgents.indexOf(container));
+			c.paidPrice = prices.get(winnerContainers.indexOf(container));
 		}
-		System.out.println("Getting the destiantion");
-		if (winnerContainers.size() > 0)
-			wd = winnerContainers.get(0).d;
 		System.out.println(prices);
 		System.out.println(wd);
 	}
 
-	public void result(List<BiddingAgent> winners, List<Float> prices, List<Train> unhappy, Train winner,
-			List<Container> unhappyC, List<Container> winnerC) {
+	public void result(List<BiddingAgent> winners, List<Float> prices, List<BiddingAgent> unhappy) {
 		System.out.println("Results received for round = " + round);
-		if (round == 1)
-			round1(winners, prices, unhappy, winner);
+		if (round == 1){
+			round1(winners, prices, unhappy);
+		}
 		else if (round == 2)
-			round2(prices, unhappyC, winnerC);
+			round2(prices,unhappy,winners);
 
 	}
 }

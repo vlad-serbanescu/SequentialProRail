@@ -1,8 +1,10 @@
-import java.util.AbstractMap;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
 
 public class AuctioneerAgent {
 	Map<Route, Float> beliefs;
@@ -11,7 +13,7 @@ public class AuctioneerAgent {
 	int numWinners;
 	AuctionOraganizerAgent organizer;
 
-	Map<Route, Entry<BiddingAgent, Float>> winners = new HashMap<>();
+	Map<Route, TreeMap<Float, BiddingAgent>> winners = new HashMap<>();
 
 	public AuctioneerAgent(Map<Route, Float> beliefBase, List<Route> initGoals, List<BiddingAgent> biddersList,
 			int winners, AuctionOraganizerAgent organizer) {
@@ -24,51 +26,58 @@ public class AuctioneerAgent {
 	}
 
 	public void Bid(BiddingAgent ba, Route slot, Float price) {
-			System.out.println("Received a bid");
-			if(winners.containsKey(slot)){
-				Entry<BiddingAgent, Float> e = winners.get(slot);
-				if(price> e.getValue())
-					winners.put(slot, new AbstractMap.SimpleEntry<BiddingAgent,Float>(ba, price));
-			}
-			else{
-				if(beliefs.containsKey(slot)){
-					Float min = beliefs.get(slot);
-					if(price>min) winners.put(slot, new AbstractMap.SimpleEntry<BiddingAgent,Float>(ba, price));
+		//System.out.println("Received a bid");
+		if (beliefs.containsKey(slot))
+			if (beliefs.get(slot) < price) {
+				if (winners.containsKey(slot)) {
+					TreeMap<Float, BiddingAgent> e = winners.get(slot);
+					if (e.size() >= numWinners) {
+						if (price > e.firstKey()) {
+							e.remove(e.firstKey());
+							e.put(price, ba);
+						}
+					} else
+						e.put(price, ba);
+				} else {
+					TreeMap<Float, BiddingAgent> tm = new TreeMap<>();
+					tm.put(price, ba);
+					winners.put(slot, tm);
 				}
-				else{
-					winners.put(slot, new AbstractMap.SimpleEntry<BiddingAgent,Float>(ba, price));
-				}
-					
 			}
 	}
 
 	public void goalRule(Route g) {
 		System.out.println("Starting an Auction");
-		float price=0.0f;
-		if(beliefs.containsKey(g)){
+		float price = 0.0f;
+		if (beliefs.containsKey(g)) {
 			price = beliefs.get(g);
 		}
 		System.out.println("Inform all bidders");
+		System.out.println(beliefs);
+		System.out.println(g);
 		for (BiddingAgent biddingAgent : biddersList) {
 			biddingAgent.announce(g, price, this);
 		}
-		
+
 		System.out.println("All informed");
-		if(winners.containsKey(g)){
-			Entry<BiddingAgent, Float> e = winners.get(g);
-			if(e.getKey()==null){
-				System.out.println("No winner");
+		System.out.println(winners);
+		if (winners.containsKey(g)) {
+			TreeMap<Float, BiddingAgent> e = winners.get(g);
+			System.out.println("Sold for the price(s) of " + e.keySet());
+			for (BiddingAgent biddingAgent : e.values()) {
+				biddingAgent.sold(this, g);
 			}
-			else{
-				System.out.println("Sold for the price of "+ e.getValue());
-				e.getKey().sold(this,g);
-			}
+			Set<BiddingAgent> uh = new HashSet<>(biddersList);
+			uh.removeAll(e.values());
+			List<BiddingAgent> unhappy = new LinkedList<>(uh);
+			organizer.result(new LinkedList<>(e.values()), new LinkedList<>(e.keySet()), unhappy);
 		}
+
 	}
-	
-	public void run(){
+
+	public void run() {
 		System.out.println("Auctioneer Started");
-		while(goals.size()>0){
+		while (goals.size() > 0) {
 			goalRule(goals.remove(0));
 		}
 	}
